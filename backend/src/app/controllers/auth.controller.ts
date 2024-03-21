@@ -10,7 +10,7 @@ import {
 import { Role } from "@prisma/client";
 import { validationResult } from "express-validator";
 import { HttpException } from "../exceptions/exception";
-import { compare, compareSync } from "bcryptjs";
+import { compare, compareSync, hashSync } from "bcryptjs";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -31,19 +31,22 @@ export default class AuthController {
         result.array()
       );
     }
-    const { name, email, password } = request.body;
+    const { name, email, password, phoneNumber, address } = request.body;
     const userId = await UserRepository.customUserId();
+    const hashPassword = hashSync(password, 10);
     const userPayload = new UserRepository(
       name,
       email,
-      password,
+      hashPassword,
       userId,
-      Role.CUSTOMER
+      Role.CUSTOMER,
+      phoneNumber,
+      address
     );
     const newUser = await userPayload.store();
     return response.status(success_code).json({
       message: "User created successfully, use details provided to sign in",
-      details: { id: newUser?.id, name: newUser?.name },
+      details: { id: newUser?.id, name: newUser?.username },
     });
   }
   //Login
@@ -68,11 +71,9 @@ export default class AuthController {
     }
     const accessToken = await generateAccessToken({ user: user?.id });
     const refreshToken = await generateRefreshToken({ user: user?.email });
-    return response
-      .status(success_code)
-      .json({
-        message: "User credentials passed, and is able to log in successfully",
-        details: { accessToken, refreshToken },
-      });
+    return response.status(success_code).json({
+      message: "User credentials passed, and is able to log in successfully",
+      details: { accessToken, refreshToken },
+    });
   }
 }

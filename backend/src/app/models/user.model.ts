@@ -1,8 +1,5 @@
-import { Request, Response } from 'express';
-import Database from '../config/db.config';
-import { Role } from '@prisma/client';
-import { hashSync } from 'bcryptjs';
-import { success_code } from '../constants/status-codes-constant';
+import Database from "../config/db.config";
+import { Role } from "@prisma/client";
 
 export default class UserRepository {
   constructor(
@@ -10,27 +7,30 @@ export default class UserRepository {
     public email: string,
     public password: string,
     public id: string,
-    public role: Role
+    public phoneNumber: string,
+    public role: Role,
+    public address?: Object
   ) {}
 
   //STORE NEW USERS
   async store() {
     try {
-      const hashPassword = hashSync(this.password, 10);
       const prisma = Database.open();
       const user = prisma.user.create({
         data: {
           email: this.email,
-          name: this.name,
-          password: hashPassword,
+          username: this.name,
+          password: this.password,
+          phone_number: this.phoneNumber,
           role: this.role,
           id: this.id,
+          address: this.address,
         },
       });
       Database.close();
       return user;
     } catch (error) {
-      new Error('Ops something went wrong, failed to register new user');
+      new Error("Ops something went wrong, failed to register new user");
     }
   }
 
@@ -60,7 +60,7 @@ export default class UserRepository {
   //Create custom Id
   static async customUserId() {
     const totalNumber = await UserRepository.count();
-    const userId = `CU-${100 + totalNumber }`;
+    const userId = `CU-${100 + totalNumber}`;
     return userId;
   }
 }
