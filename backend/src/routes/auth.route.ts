@@ -13,7 +13,7 @@ export const authRoute: Router = Router();
  * tags:
  *   - name: Authentication
  *     description: Endpoints for user authentication
- * /api/auth/register:
+ * /api/register:
  *   post:
  *     tags:
  *       - Authentication
@@ -77,14 +77,14 @@ export const authRoute: Router = Router();
 
 //REGISTER
 authRoute.post(
-  "/auth/register",
+  "/register",
   body("email")
     .notEmpty()
     .trim()
     .isEmail()
     .toLowerCase()
     .escape()
-    .custom(async (value) => {
+    .custom(async (value: string) => {
       //find if user exist already
       const existingUser = await UserRepository.findByUniqueKey(value);
       if (existingUser) {
@@ -94,20 +94,19 @@ authRoute.post(
         });
       }
     }),
+  body("phoneNumber").notEmpty().escape().trim(),
   body("name").notEmpty().trim().toLowerCase().escape(),
   body("password").notEmpty().isLength({ min: 5 }).isLength({ max: 10 }),
+  body("address").trim().escape().toLowerCase(),
   errorController(AuthController.register)
 );
-
-
-
 
 /**
  * @swagger
  * tags:
  *   - name: Authentication
  *     description: Endpoints for user authentication
- * /api/auth/login:
+ * /api/login:
  *   post:
  *     tags:
  *       - Authentication
@@ -171,14 +170,18 @@ authRoute.post(
     .isEmail()
     .notEmpty()
     .escape()
-    .custom(async (value) => {
+    .custom(async (value: string) => {
       //find if user account exist
       const existingUser = await UserRepository.findByUniqueKey(value);
       if (!existingUser) {
-        throw new HttpException("User doesn't exists in  the system", badRequest, {
-          validation:
-            "The email the user is trying to sign in with doesnt exist in the system",
-        });
+        throw new HttpException(
+          "User doesn't exists in  the system",
+          badRequest,
+          {
+            validation:
+              "The email the user is trying to sign in with doesnt exist in the system",
+          }
+        );
       }
     }),
   body("password")
@@ -186,5 +189,6 @@ authRoute.post(
     .trim()
     .escape()
     .isLength({ min: 5 })
-    .isLength({ max: 10 }),errorController(AuthController.login)
+    .isLength({ max: 10 }),
+  errorController(AuthController.login)
 );
