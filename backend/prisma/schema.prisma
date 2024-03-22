@@ -16,7 +16,7 @@ enum Role {
 }
 
 model User {
-  id           String    @id @unique
+  id           String    @id
   username     String
   email        String    @unique
   password     String
@@ -29,7 +29,8 @@ model User {
 }
 
 model Product {
-  name           String @unique
+  id             Int    @id @default(autoincrement())
+  name           String
   price          Int
   description    String
   category       String
@@ -39,7 +40,7 @@ model Product {
 }
 
 model Address {
-  id             Int     @unique @default(autoincrement())
+  id             Int     @id @default(autoincrement())
   street_address String
   address2       String?
   phone_number   String
@@ -47,4 +48,14 @@ model Address {
   userId         String
 
   @@map("addresses")
+}
+
+model Event {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  date      DateTime
+  time      DateTime
+  location  String
+  createdAt DateTime @default(now())
+  
 }
