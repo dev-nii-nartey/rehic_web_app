@@ -8,6 +8,7 @@ import { authRoute } from "./routes/auth.route";
 import swaggerDocs from "./app/utils/swagger";
 import { errorHandlerMiddleware } from "./app/middlewares/errors-middleware";
 import { limiter } from "./app/middlewares/rate-limitter";
+import { eventRoute } from "./routes/events.route";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(morgan("dev"));
 app.use(limiter);
 
 app.use("/api", authRoute);
+app.use("/api", eventRoute);
 
 app.listen(PORT, () => {
   console.log(`app is live on http://localhost:${PORT}`);
