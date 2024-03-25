@@ -9,14 +9,14 @@ export default class UserRepository {
     public id: string,
     public phoneNumber: string,
     public role: Role,
-    public address?: Object
+    public address?: string
   ) {}
 
   //STORE NEW USERS
   async store() {
     try {
       const prisma = Database.open();
-      const user = prisma.user.create({
+      const user = await prisma.user.create({
         data: {
           email: this.email,
           username: this.name,
@@ -26,8 +26,12 @@ export default class UserRepository {
           id: this.id,
           address: this.address,
         },
+        select: {
+          email: true,
+          username: true,
+        },
       });
-      Database.close();
+      await Database.close();
       return user;
     } catch (error) {
       new Error("Ops something went wrong, failed to register new user");
@@ -43,10 +47,10 @@ export default class UserRepository {
           email: email,
         },
       });
-      Database.close();
+      await Database.close();
       return user;
     } catch (error) {
-      console.log(error);
+      new Error("Ops something went wrong, failed to find  user");
     }
   }
 
