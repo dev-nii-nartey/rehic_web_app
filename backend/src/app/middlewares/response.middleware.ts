@@ -3,7 +3,7 @@ export class JsonOutput {
   message: string;
 
   constructor(data: any) {
-    this.data = data;
-    this.message = "Task is done successfully";
+    this.message = data.message;
+    this.data = data.details || data || "Something went wrong";
   }
 }
