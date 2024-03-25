@@ -4,7 +4,6 @@ const config: Config.InitialOptions = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   verbose: true,
-  "moduleFileExtensions": ["ts", "js"],
 };
 
 export default config;
