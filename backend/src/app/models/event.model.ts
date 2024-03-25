@@ -11,8 +11,8 @@ export default class EventRepository {
   ) {}
 
   async add() {
-    const prisma = Database.open();
     try {
+      const prisma = Database.open();
       const result = await prisma.event.create({
         data: {
           name: this.eventName,
@@ -21,7 +21,7 @@ export default class EventRepository {
           time: this.time,
         },
       });
-      Database.close();
+      await Database.close();
       return result;
     } catch (error) {
       new Error("Ops, something went wrong, failed to save new event");
@@ -52,7 +52,7 @@ export default class EventRepository {
     try {
       const prisma = Database.open();
       const result = prisma.event.findMany();
-      Database.close();
+      await Database.close();
       return result;
     } catch (error) {
       new Error("Ops, something went wrong, failed to get all events");
@@ -62,30 +62,58 @@ export default class EventRepository {
   static async findEvent(name: string) {
     try {
       const prisma = Database.open();
-      const result = prisma.event.findUniqueOrThrow({
+      const result = await prisma.event.findFirst({
         where: {
           name: name,
         },
       });
-      Database.close();
+      await Database.close();
       return result;
     } catch (error) {
-      new Error("Ops, something went wrong, failed to the event");
+      new Error("Ops, something went wrong, failed to  find the event by name");
     }
   }
 
   static async findEventById(id: number) {
     try {
       const prisma = Database.open();
-      const result = prisma.event.findFirst({
+      const result = await prisma.event.findFirst({
         where: {
           id: id,
         },
       });
-      Database.close();
+      await Database.close();
       return result;
     } catch (error) {
-      new Error("Ops, something went wrong, failed to the event");
+      new Error("Ops, something went wrong, failed to find the event by id");
+    }
+  }
+
+  static async destroy(id: number) {
+    try {
+      const prisma = Database.open();
+      const result = await prisma.event.delete({
+        where: {
+          id: id,
+        },
+      });
+      await Database.close();
+      return result;
+    } catch (error) {
+      new Error("Ops, something went wrong, failed to delete the event");
+    }
+  }
+
+  static async count() {
+    try {
+      const prisma = Database.open();
+      const result = prisma.event.count();
+      await Database.close();
+      return result;
+    } catch (error) {
+      new Error(
+        "Ops, something went wrong, failed to count the total number of events"
+      );
     }
   }
 }
