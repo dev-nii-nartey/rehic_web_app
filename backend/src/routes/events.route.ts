@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { errorController } from "../app/middlewares/errors-middleware";
 import EventController from "../app/controllers/event.controller";
-import { body, param } from "express-validator";
+import { body, param, query } from "express-validator";
 import EventRepository from "../app/models/event.model";
 import { HttpException } from "../app/exceptions/exception";
 import { validation_code } from "../app/constants/status-codes-constant";
@@ -14,19 +14,10 @@ eventRoute.post(
     .trim()
     .notEmpty()
     .escape()
-    .toLowerCase()
     .custom(async (value) => {
       const result = await EventRepository.findEvent(value);
       if (result) {
-        throw new HttpException(
-          "Event already exit, would you like to update it?",
-          validation_code,
-          {
-            data: result,
-            message:
-              "Event already exist, Would you like to update it instead ?",
-          }
-        );
+        throw new Error("Event already exit, would you like to update it?");
       }
     }),
   body("location").trim().notEmpty().escape().toLowerCase(),
@@ -35,8 +26,25 @@ eventRoute.post(
   errorController(EventController.create)
 );
 
-eventRoute.get("/event/");
-eventRoute.get("/event/:id");
+eventRoute.get("/event/", errorController(EventController.fetch));
+
+eventRoute.get(
+  "/event/search",
+  query("name").trim().escape().custom(async (value) => {
+    const result = await EventRepository.findEvent(value);
+    if (!result) {
+      throw new Error("The Event  your are searching for doesnt exit, would you like to create it?");
+    }
+  }),
+  errorController(EventController.searchByName)
+);
+
+eventRoute.get(
+  "/event/:id",
+  param("id").trim().notEmpty().escape(),
+  errorController(EventController.find)
+);
+
 eventRoute.put(
   "/event/:id",
   param("id")
@@ -45,22 +53,29 @@ eventRoute.put(
     .custom(async (value) => {
       const result = await EventRepository.findEventById(value);
       if (!result) {
-        throw new HttpException(
-          "Event doesnt exit, would you like to create it?",
-          validation_code,
-          {
-            data: result,
-            message:
-              "Event already exist, Would you like to update it instead ?",
-          }
-        );
+        throw new Error("Event doesnt exit, would you like to create it?");
       }
     })
     .escape(),
   body("name").trim().notEmpty().escape().toLowerCase(),
   body("location").trim().notEmpty().escape().toLowerCase(),
   body("date").trim().notEmpty().escape().toDate(),
-  body("time").trim().notEmpty().escape().isTime({ hourFormat: "hour24" }),
+  body("time").trim().notEmpty().escape(),
   errorController(EventController.update)
 );
-eventRoute.delete("/event/:id");
+
+eventRoute.delete(
+  "/event/:id",
+  param("id")
+    .trim()
+    .notEmpty()
+    .custom(async (value) => {
+      const id = parseInt(value)
+      const result = await EventRepository.findEventById(id);
+      if (!result) {
+        throw new Error("Event doesnt exit, would you like to create it?");
+      }
+    })
+    .escape(),
+  errorController(EventController.delete)
+);
