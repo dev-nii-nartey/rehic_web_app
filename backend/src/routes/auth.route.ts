@@ -5,6 +5,7 @@ import UserRepository from "../app/models/user.model";
 import { HttpException } from "../app/exceptions/exception";
 import { badRequest } from "../app/constants/status-codes-constant";
 import { errorController } from "../app/middlewares/errors-middleware";
+import { compare } from "bcryptjs";
 
 export const authRoute: Router = Router();
 
@@ -88,10 +89,7 @@ authRoute.post(
       //find if user exist already
       const existingUser = await UserRepository.findByUniqueKey(value);
       if (existingUser) {
-        throw new HttpException("User already exists in system", badRequest, {
-          validation:
-            "The email the user is trying to sign up with is already registered",
-        });
+        throw new Error("User is already registered in the system");
       }
     }),
   body("phoneNumber").notEmpty().escape().trim(),
@@ -174,14 +172,7 @@ authRoute.post(
       //find if user account exist
       const existingUser = await UserRepository.findByUniqueKey(value);
       if (!existingUser) {
-        throw new HttpException(
-          "User doesn't exists in  the system",
-          badRequest,
-          {
-            validation:
-              "The email the user is trying to sign in with doesnt exist in the system",
-          }
-        );
+        throw new Error("This email doesnt exist in the system");
       }
     }),
   body("password")
@@ -189,6 +180,16 @@ authRoute.post(
     .trim()
     .escape()
     .isLength({ min: 5 })
-    .isLength({ max: 10 }),
+    .isLength({ max: 10 })
+    .custom(async (value: string) => {
+      //find if user account exist
+      const existingUser = await UserRepository.findByUniqueKey(value);
+      if (existingUser) {
+        const pass = await compare(value, existingUser.password);
+        if (!pass) {
+          throw new Error("The password the user entered is incorrect");
+        }
+      }
+    }),
   errorController(AuthController.login)
 );
