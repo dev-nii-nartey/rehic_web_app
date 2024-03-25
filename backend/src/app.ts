@@ -6,7 +6,6 @@ import cors from "cors";
 import morgan from "morgan";
 import { authRoute } from "./routes/auth.route";
 import swaggerDocs from "./app/utils/swagger";
-import { errorHandlerMiddleware } from "./app/middlewares/errors-middleware";
 import { limiter } from "./app/middlewares/rate-limitter";
 import { eventRoute } from "./routes/events.route";
 
