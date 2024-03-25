@@ -8,13 +8,14 @@ import {
   validation_code,
 } from "../constants/status-codes-constant";
 import { Role } from "@prisma/client";
-import { validationResult } from "express-validator";
+import { matchedData, validationResult } from "express-validator";
 import { HttpException } from "../exceptions/exception";
 import { compare, compareSync, hashSync } from "bcryptjs";
 import {
   generateAccessToken,
   generateRefreshToken,
 } from "../middlewares/jwt.middleware";
+import { JsonOutput } from "../middlewares/response.middleware";
 
 export default class AuthController {
   constructor() {}
@@ -25,13 +26,11 @@ export default class AuthController {
   ) {
     const result = validationResult(request);
     if (!result.isEmpty()) {
-      throw new HttpException(
-        "Invalid Data entered",
-        unprocessableEntity,
-        result.array()
-      );
+      throw new HttpException(unprocessableEntity, result.array());
     }
-    const { name, email, password, phoneNumber, address } = request.body;
+    const { name, email, password, phoneNumber, address } =
+      matchedData(request);
+    const userAddress = address || null;
     const userId = await UserRepository.customUserId();
     const hashPassword = hashSync(password, 10);
     const userPayload = new UserRepository(
@@ -39,41 +38,31 @@ export default class AuthController {
       email,
       hashPassword,
       userId,
-      Role.CUSTOMER,
       phoneNumber,
-      address
+      Role.CUSTOMER,
+      userAddress
     );
     const newUser = await userPayload.store();
-    return response.status(success_code).json({
-      message: "User created successfully, use details provided to sign in",
-      details: { id: newUser?.id, name: newUser?.username },
-    });
+    const responseData = {
+      message: `User account created successfully`,
+      details: { newUser },
+    };
+    return response.status(success_code).json(new JsonOutput(responseData));
   }
   //Login
   static async login(request: Request, response: Response) {
     const result = validationResult(request);
     if (!result.isEmpty()) {
-      throw new HttpException(
-        "Invalid Data entered",
-        unprocessableEntity,
-        result.array()
-      );
+      throw new HttpException(unprocessableEntity, result.array());
     }
-    const { email, password } = request.body;
+    const { email } = request.body;
     const user = await UserRepository.findByUniqueKey(email);
-    const pass = await compare(password, user!.password);
-    if (!pass) {
-      throw new HttpException("Invalid password", badRequest, [
-        {
-          msg: "The password the user entered is incorrect",
-        },
-      ]);
-    }
     const accessToken = await generateAccessToken({ user: user?.id });
     const refreshToken = await generateRefreshToken({ user: user?.email });
-    return response.status(success_code).json({
+    const responseData = {
       message: "User credentials passed, and is able to log in successfully",
       details: { accessToken, refreshToken },
-    });
+    };
+    return response.status(success_code).json(new JsonOutput(responseData));
   }
 }
