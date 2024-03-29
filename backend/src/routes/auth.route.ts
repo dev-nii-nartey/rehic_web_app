@@ -162,7 +162,7 @@ authRoute.post(
  */
 //LOGIN
 authRoute.post(
-  "/auth/login",
+  "/login",
   body("email")
     .trim()
     .isEmail()
@@ -180,16 +180,6 @@ authRoute.post(
     .trim()
     .escape()
     .isLength({ min: 5 })
-    .isLength({ max: 10 })
-    .custom(async (value: string) => {
-      //find if user account exist
-      const existingUser = await UserRepository.findByUniqueKey(value);
-      if (existingUser) {
-        const pass = await compare(value, existingUser.password);
-        if (!pass) {
-          throw new Error("The password the user entered is incorrect");
-        }
-      }
-    }),
+    .isLength({ max: 10 }),
   errorController(AuthController.login)
 );
