@@ -24,7 +24,7 @@ export default class EventRepository {
       await Database.close();
       return result;
     } catch (error) {
-      new Error("Ops, something went wrong, failed to save new event");
+      throw new Error("Ops, something went wrong, failed to save new event");
     }
   }
 
@@ -44,7 +44,7 @@ export default class EventRepository {
       });
       return result;
     } catch (error) {
-      new Error("Ops, something went wrong, failed to update the  event");
+      throw new Error("Ops, something went wrong, failed to update the  event");
     }
   }
 
@@ -55,7 +55,7 @@ export default class EventRepository {
       await Database.close();
       return result;
     } catch (error) {
-      new Error("Ops, something went wrong, failed to get all events");
+      throw new Error("Ops, something went wrong, failed to get all events");
     }
   }
 
@@ -70,7 +70,7 @@ export default class EventRepository {
       await Database.close();
       return result;
     } catch (error) {
-      new Error("Ops, something went wrong, failed to  find the event by name");
+      throw new Error("Ops, something went wrong, failed to  find the event by name");
     }
   }
 
@@ -85,7 +85,7 @@ export default class EventRepository {
       await Database.close();
       return result;
     } catch (error) {
-      new Error("Ops, something went wrong, failed to find the event by id");
+      throw new Error("Ops, something went wrong, failed to find the event by id");
     }
   }
 
@@ -100,7 +100,7 @@ export default class EventRepository {
       await Database.close();
       return result;
     } catch (error) {
-      new Error("Ops, something went wrong, failed to delete the event");
+      throw new Error("Ops, something went wrong, failed to delete the event");
     }
   }
 
@@ -111,7 +111,7 @@ export default class EventRepository {
       await Database.close();
       return result;
     } catch (error) {
-      new Error(
+      throw new Error(
         "Ops, something went wrong, failed to count the total number of events"
       );
     }
