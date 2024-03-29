@@ -19,6 +19,7 @@
     "morgan": "^1.10.0",
     "nodemon": "^3.0.3",
     "prisma": "^5.9.1",
+    "rimraf": "^5.0.5",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
@@ -38,7 +39,9 @@
     "swagger-ui-express": "^5.0.0"
   },
   "scripts": {
-    "dev": "yarn nodemon  ./src/app.ts",
-    "test": "jest"
+    "build": "rimraf dist && tsc",
+    "dev": "yarn nodemon -L  ./src/app.ts",
+    "test": "jest",
+    "start": "yarn run build && node ./dist/app.js"
   }
 }
