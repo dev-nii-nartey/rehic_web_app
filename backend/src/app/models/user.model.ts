@@ -1,5 +1,7 @@
 import Database from "../config/db.config";
 import { Role } from "@prisma/client";
+import { HttpException } from "../exceptions/exception";
+import { notFound } from "../constants/status-codes-constant";
 
 export default class UserRepository {
   constructor(
@@ -34,37 +36,59 @@ export default class UserRepository {
       await Database.close();
       return user;
     } catch (error) {
-      new Error("Ops something went wrong, failed to register new user");
+      throw new Error("Ops something went wrong, failed to register new user");
+    }
+  }
+
+  static async update(email: string) {
+    try {
+      const prisma = Database.open();
+      const user = await prisma.user.update({
+        where: {
+          email: email,
+        },
+        data: this,
+      });
+    } catch (error) {
+      throw new Error("Ops something went wrong, failed to register new user");
     }
   }
 
   //FIND USER IN DATABASE
-  static async findByUniqueKey(email: string) {
+  static async findByUniqueKey(data: string) {
     try {
       const prisma = Database.open();
-      const user = await prisma.user.findUnique({
+      const user = await prisma.user.findFirstOrThrow({
         where: {
-          email: email,
+          OR: [{ email: data }, { id: data }],
         },
       });
       await Database.close();
       return user;
     } catch (error) {
-      new Error("Ops something went wrong, failed to find  user");
+      throw new Error("Ops something went wrong, failed to find  user");
     }
   }
 
   //Count number of users in Database
   static async count() {
-    const prisma = Database.open();
-    const count = await prisma.user.findMany();
-    return count.length;
+    try {
+      const prisma = Database.open();
+      const count = await prisma.user.findMany();
+      return count.length;
+    } catch (error) {
+      throw new Error("Ops something went wrong, failed to count users");
+    }
   }
 
   //Create custom Id
   static async customUserId() {
-    const totalNumber = await UserRepository.count();
-    const userId = `CU-${100 + totalNumber}`;
-    return userId;
+    try {
+      const totalNumber = await UserRepository.count();
+      const userId = `CU-${100 + totalNumber}`;
+      return userId;
+    } catch (error) {
+      throw new Error("Ops something went wrong, failed to assign userId");
+    }
   }
 }
