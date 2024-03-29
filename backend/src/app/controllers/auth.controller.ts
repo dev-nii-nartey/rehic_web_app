@@ -55,7 +55,12 @@ export default class AuthController {
     if (!result.isEmpty()) {
       throw new HttpException(unprocessableEntity, result.array());
     }
-    const { email } = request.body;
+    const { email, password } = matchedData(request);
+    const existingUser = await UserRepository.findByUniqueKey(email);
+    const pass = await compare(password, existingUser.password);
+    if (!pass) {
+      throw new Error("The password the user entered is incorrect");
+    }
     const user = await UserRepository.findByUniqueKey(email);
     const accessToken = await generateAccessToken({ user: user?.id });
     const refreshToken = await generateRefreshToken({ user: user?.email });
@@ -64,5 +69,15 @@ export default class AuthController {
       details: { accessToken, refreshToken },
     };
     return response.status(success_code).json(new JsonOutput(responseData));
+  }
+
+  static async updateProfile(request: Request, response: Response) {
+    const result = validationResult(request);
+    if (!result.isEmpty()) {
+      throw new HttpException(unprocessableEntity, result.array());
+    }
+    const { name, email, password, phoneNumber, address, id,role } =
+      matchedData(request);
+      const updateUser = new UserRepository(name,email,password,id,phoneNumber,role)
   }
 }
