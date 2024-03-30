@@ -87,7 +87,7 @@ authRoute.post(
     .escape()
     .custom(async (value: string) => {
       //find if user exist already
-      const existingUser = await UserRepository.findByUniqueKey(value);
+      const existingUser = await UserRepository.findUser(value);
       if (existingUser) {
         throw new Error("User is already registered in the system");
       }
@@ -170,7 +170,7 @@ authRoute.post(
     .escape()
     .custom(async (value: string) => {
       //find if user account exist
-      const existingUser = await UserRepository.findByUniqueKey(value);
+      const existingUser = await UserRepository.findUser(value);
       if (!existingUser) {
         throw new Error("This email doesnt exist in the system");
       }

@@ -22,7 +22,7 @@ model User {
   password     String
   role         Role
   phone_number String
-  createdAt    DateTime @default(now())
+  createdAt    DateTime @default(now()) @db.Date
   address      String?
 
   @@map("users")
