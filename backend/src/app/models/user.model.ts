@@ -69,6 +69,20 @@ export default class UserRepository {
       throw new Error("Ops something went wrong, failed to find  user");
     }
   }
+  static async findUser(data: string) {
+    try {
+      const prisma = Database.open();
+      const user = await prisma.user.findFirst({
+        where: {
+          OR: [{ email: data }, { id: data }],
+        },
+      });
+      await Database.close();
+      return user;
+    } catch (error) {
+      throw new Error("Ops something went wrong, failed to find  user");
+    }
+  }
 
   //Count number of users in Database
   static async count() {
