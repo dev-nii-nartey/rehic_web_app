@@ -35,7 +35,7 @@ public record Member(
         String emergencyContactPhone,
         String emergencyContactRelationship,
         LocalDate dateJoinedChurch,
-        boolean baptizedWithHolySpirit,
+        Boolean baptizedWithHolySpirit,
         LocalDate dateOfSalvation,
         LocalDate baptismDate,
         String previousChurchAffiliation,
@@ -43,16 +43,16 @@ public record Member(
         List<String> ministriesOfInterest,
         List<String> spiritualGifts,
         List<String> skills,
-        boolean agreeWithBibleIsInspiredWord,
-        boolean agreeWithSalvationThroughFaith,
-        boolean agreeWithJesusSonOfGod,
-        boolean commitmentAttendServices,
-        boolean commitmentSupportActivities,
-        boolean commitmentTithe,
-        boolean commitmentLiveChristianValues,
+        Boolean agreeWithBibleIsInspiredWord,
+        Boolean agreeWithSalvationThroughFaith,
+        Boolean agreeWithJesusSonOfGod,
+        Boolean commitmentAttendServices,
+        Boolean commitmentSupportActivities,
+        Boolean commitmentTithe,
+        Boolean commitmentLiveChristianValues,
         LocalDate signatureDate,
-        boolean consentContactPermission,
-        boolean consentPhotoUse,
+        Boolean consentContactPermission,
+        Boolean consentPhotoUse,
         LocalDate consentSignatureDate,
         // Additional Information
         String specialNeeds,
@@ -109,4 +109,5 @@ public record Member(
                 membershipRegistrationForm.howDidYouHear()
         );
     }
+
 }

@@ -1,6 +1,9 @@
 package com.rehic.members;
 
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -11,16 +14,16 @@ public record MembershipRegistrationForm(
         UUID recordId,
         LocalDate registrationDate,
         // Personal Information
-        String firstName,
-        String lastName,
+@NotBlank String firstName,
+        @NotBlank     String lastName,
         String preferredName,
-        LocalDate dateOfBirth,
-        Gender gender,
-        MaritalStatus maritalStatus,
-        String residingAddress,
-        String primaryPhone,
+        @NotBlank  LocalDate dateOfBirth,
+        @NotBlank Gender gender,
+        @NotBlank   MaritalStatus maritalStatus,
+        @NotBlank  String residingAddress,
+        @NotBlank  String primaryPhone,
         String secondaryPhone,
-        String emailAddress,
+       @Email String emailAddress,
         String occupation,
         String employer,
         // Family Information
@@ -36,7 +39,7 @@ public record MembershipRegistrationForm(
         String emergencyContactRelationship,
         // Spiritual Journey
         LocalDate dateJoinedChurch,
-        boolean baptizedWithHolySpirit,
+        Boolean baptizedWithHolySpirit,
         LocalDate dateOfSalvation,
         LocalDate baptismDate,
         String previousChurchAffiliation,
@@ -46,17 +49,17 @@ public record MembershipRegistrationForm(
         List<String> spiritualGifts,
         List<String> skills,
         // Faith and Commitment
-        boolean agreeWithBibleIsInspiredWord,
-        boolean agreeWithSalvationThroughFaith,
-        boolean agreeWithJesusSonOfGod,
-        boolean commitmentAttendServices,
-        boolean commitmentSupportActivities,
-        boolean commitmentTithe,
-        boolean commitmentLiveChristianValues,
+        Boolean agreeWithBibleIsInspiredWord,
+        Boolean agreeWithSalvationThroughFaith,
+        Boolean agreeWithJesusSonOfGod,
+        Boolean commitmentAttendServices,
+        Boolean commitmentSupportActivities,
+        Boolean commitmentTithe,
+        Boolean commitmentLiveChristianValues,
         LocalDate signatureDate,
         // Consent and Privacy
-        boolean consentContactPermission,
-        boolean consentPhotoUse,
+        Boolean consentContactPermission,
+        Boolean consentPhotoUse,
         LocalDate consentSignatureDate,
         // Additional Information
         String specialNeeds,

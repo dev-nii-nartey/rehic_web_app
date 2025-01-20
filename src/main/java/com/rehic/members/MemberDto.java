@@ -41,7 +41,7 @@ public class MemberDto implements Serializable {
     private String emergencyContactRelationship;
     // Spiritual Journey
     private LocalDate dateJoinedChurch;
-    private boolean baptizedWithHolySpirit;
+    private Boolean baptizedWithHolySpirit;
     private LocalDate dateOfSalvation;
     private LocalDate baptismDate;
     private String previousChurchAffiliation;
