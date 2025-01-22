@@ -31,4 +31,9 @@ public class MembersController {
     private List<MemberDto> getAllMembers() {
         return memberService.getMembers();
     }
+
+    @GetMapping("/test")
+    private String test() {
+        return "Works";
+    }
 }
