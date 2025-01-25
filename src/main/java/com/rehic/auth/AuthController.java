@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.ResourceAccessException;
 
 
 @RestController
@@ -29,16 +30,16 @@ public class AuthController {
     private UserDetailsService userDetailsService;
 
     @PostMapping("/authenticate")
-    public String authenticate(@RequestBody AuthRequest authRequest) throws Exception {
+    public String authenticate(@RequestBody AuthRequest authRequest)  {
         try {
-            authenticationManager.authenticate(
+         authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password())
             );
 
             final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.username());
-            return jwtUtil.generateToken(userDetails.getUsername());
+            return jwtUtil.generateToken(userDetails);
         } catch (AuthenticationException e) {
-            throw new Exception("Invalid username or password", e);
+            throw new ResourceAccessException("Invalid username/password supplied");
         }
     }
 }
