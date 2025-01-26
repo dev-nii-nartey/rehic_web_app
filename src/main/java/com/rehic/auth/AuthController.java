@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.ResourceAccessException;
 
@@ -19,6 +20,7 @@ import org.springframework.web.client.ResourceAccessException;
 @AllArgsConstructor
 @Getter
 @Setter
+@RequestMapping("/api/v1/rehic")
 public class AuthController {
 
 
@@ -29,7 +31,7 @@ public class AuthController {
 
     private UserDetailsService userDetailsService;
 
-    @PostMapping("/authenticate")
+    @PostMapping("/login")
     public String authenticate(@RequestBody AuthRequest authRequest)  {
         try {
          authenticationManager.authenticate(

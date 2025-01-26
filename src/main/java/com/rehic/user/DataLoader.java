@@ -1,8 +1,6 @@
 package com.rehic.user;
 
 import com.rehic.auth.MyUser;
-import com.rehic.auth.UserRepository;
-import com.rehic.auth.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;

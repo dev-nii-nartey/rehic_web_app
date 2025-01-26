@@ -1,5 +1,7 @@
 package com.rehic.auth;
 
+import com.rehic.user.UserRepository;
+import com.rehic.user.UserService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UserServiceImpl implements UserDetailsService,UserService {
+public class UserServiceImpl implements UserDetailsService, UserService {
 
     private UserRepository userRepo;
 

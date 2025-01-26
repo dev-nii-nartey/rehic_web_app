@@ -17,23 +17,23 @@ public class MembersController {
     private MemberService memberService;
 
     @PostMapping
-    private String addMember(@RequestBody MembershipRegistrationForm memberRegistrationForm) {
+    public String addMember(@RequestBody MembershipRegistrationForm memberRegistrationForm) {
         MemberDto member = memberService.addMember(memberRegistrationForm);
         return member.getFirstName();
     }
 
     @GetMapping("/{email}")
-    private MemberDto getMember(@PathVariable String email)  {
+    public MemberDto getMember(@PathVariable String email)  {
         return memberService.getMember(email) ;
     }
 
     @GetMapping
-    private List<MemberDto> getAllMembers() {
+    public List<MemberDto> getAllMembers() {
         return memberService.getMembers();
     }
 
     @GetMapping("/test")
-    private String test() {
+    public String test() {
         return "Works";
     }
 }
