@@ -37,7 +37,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             Map<String, String> tokenInfo = jwtUtil.parseToken(request);
-            String username = tokenInfo.get("username");
+            String username = tokenInfo.get("email");
             String jwt = tokenInfo.get("jwt");
 
 

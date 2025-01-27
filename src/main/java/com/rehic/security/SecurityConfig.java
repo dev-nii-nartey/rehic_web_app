@@ -41,14 +41,14 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // Enable CORS first
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Add this
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/authenticate").permitAll()
-                        .requestMatchers("/helloAdmin").hasAnyRole("ADMIN")
+                        .requestMatchers("/api/v1/rehic/login").permitAll()
+                        .requestMatchers("/api/v1/rehic/helloAdmin").hasAnyRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

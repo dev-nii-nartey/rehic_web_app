@@ -33,7 +33,7 @@ public class JwtUtil {
         return createToken(claims);
     }
 
-    // Create a JWT token with specified claims and subject (username)
+    // Create a JWT token with specified claims and subject (email)
     private String createToken(Map<String, Object> claims) {
         return Jwts.builder()
                 .claims(claims)
@@ -54,7 +54,7 @@ public class JwtUtil {
         }
     }
 
-    // Extract the username from the token
+    // Extract the email from the token
     public String extractUsername(String token) {
         return extractAllClaims(token).getSubject();
     }
