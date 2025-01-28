@@ -1,14 +1,17 @@
 package com.rehic.members;
 
 
-import java.util.List;
-import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+
 
 public interface MemberService {
     MemberDto addMember(MembershipRegistrationForm member);
-    List<MemberDto> getMembers();
+     Page<MemberDto> getMembers(Pageable pageable);
     MemberDto getMember(String email);
-    void updateMember(MemberDto member);
-    void deleteMember(UUID id);
+    MemberDto updateMember(String email, MemberDto dto);
+     void deleteMember(String email);
+    Page<MemberDto> searchByName(String name, Pageable pageable);
 
 }

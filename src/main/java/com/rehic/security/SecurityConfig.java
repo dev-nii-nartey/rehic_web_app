@@ -48,7 +48,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/v1/rehic/login").permitAll()
-                        .requestMatchers("/api/v1/rehic/helloAdmin").hasAnyRole("ADMIN")
+                        .requestMatchers("/api/v1/rehic/members").permitAll()
+                        .requestMatchers("/api/v1/rehic/events").hasAnyRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
