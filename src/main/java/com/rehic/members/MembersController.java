@@ -17,9 +17,9 @@ public class MembersController {
     private MemberService memberService;
 
     @PostMapping
-    public String addMember(@RequestBody MembershipRegistrationForm memberRegistrationForm) {
+    public CustomResponses addMember(@RequestBody MembershipRegistrationForm memberRegistrationForm) {
         MemberDto member = memberService.addMember(memberRegistrationForm);
-        return member.getFirstName();
+        return new CustomResponses(member.getFirstName());
     }
 
     @GetMapping("/{email}")
