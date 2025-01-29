@@ -43,7 +43,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberDto getMember(String email) {
-        return null;
+        return memberRepository.findById(email).map(MemberDto::new).orElse(null);
     }
 
     @Override
