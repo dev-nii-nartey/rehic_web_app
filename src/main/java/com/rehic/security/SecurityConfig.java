@@ -50,6 +50,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/rehic/login").permitAll()
                         .requestMatchers("/api/v1/rehic/members").permitAll()
                         .requestMatchers("/api/v1/rehic/events").hasAnyRole("ADMIN")
+                        .requestMatchers("/api/v1/rehic/helloUser").permitAll()
+                        .requestMatchers("/api/v1/rehic/helloAdmin").hasAnyRole("ADMIN")
+
 
                         .anyRequest().authenticated()
                 )

@@ -92,7 +92,7 @@ public class JwtUtil {
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String jwt = authorizationHeader.substring(7);
-            details.put("username", extractUsername(jwt));
+            details.put("email", extractUsername(jwt));
             details.put("jwt", jwt);
             return details;
         }
