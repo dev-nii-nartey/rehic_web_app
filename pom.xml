@@ -132,6 +132,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
-        <finalName>authentication-service</finalName>
+        <finalName>rehic</finalName>
     </build>
 </project>
