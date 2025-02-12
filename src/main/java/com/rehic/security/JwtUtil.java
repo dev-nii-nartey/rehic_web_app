@@ -22,19 +22,35 @@ public class JwtUtil {
     @Value("${jwt.secret}" )
     private String secretKey;
 
-    @Value("${jwt.expiration}")
-    private long expiration;
+
+    @Value("${access.token.expiration}")
+    private long accessTokenExpiration;
+
+    @Value("${refresh.token.expiration}")
+    private long refreshTokenExpiration;
+
+
+    //Generate RefreshToken
+    public String generateRefreshToken(UserDetails user) {
+       return generateToken(user,refreshTokenExpiration);
+    }
+
+
+    //Generate accessToken
+    public String generateAccessToken(UserDetails user) {
+       return generateToken(user,accessTokenExpiration);
+    }
 
     // Generate token with given user name
-    public String generateToken(UserDetails userDetails) {
+    private String generateToken(UserDetails userDetails, Long expiration) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("subject", userDetails.getUsername());
         claims.put("authorities", userDetails.getAuthorities());
-        return createToken(claims);
+        return createToken(claims,expiration);
     }
 
     // Create a JWT token with specified claims and subject (email)
-    private String createToken(Map<String, Object> claims) {
+    private String createToken(Map<String, Object> claims, Long expiration) {
         return Jwts.builder()
                 .claims(claims)
                 .subject(claims.get("subject").toString())
