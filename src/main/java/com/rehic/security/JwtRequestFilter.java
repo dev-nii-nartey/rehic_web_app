@@ -6,6 +6,7 @@ import io.jsonwebtoken.JwtException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +27,7 @@ import jakarta.servlet.http.HttpServletResponse;
 @AllArgsConstructor
 @Setter
 @Getter
+@Slf4j
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private UserDetailsService userDetailsService;
@@ -40,12 +42,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             String username = tokenInfo.get("email");
             String jwt = tokenInfo.get("jwt");
 
-
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-                if (jwtUtil.validateToken(jwt, userDetails)) {
+                if (jwtUtil.isValidAccessToken( userDetails.getUsername(),jwt)) {
                     JwtAuthenticationToken jwtAuthenticationToken = new JwtAuthenticationToken(userDetails, userDetails.getAuthorities());
                     jwtAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(jwtAuthenticationToken);

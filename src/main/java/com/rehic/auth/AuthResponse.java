@@ -1,4 +1,4 @@
 package com.rehic.auth;
 
-public record AuthResponse(String token) {
+public record AuthResponse(String refreshToken, String accessToken) {
 }

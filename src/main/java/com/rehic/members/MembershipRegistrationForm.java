@@ -63,7 +63,8 @@ public record MembershipRegistrationForm(
         LocalDate consentSignatureDate,
         // Additional Information
         String specialNeeds,
-        String howDidYouHear
+        String howDidYouHear,
+        Boolean isDeleted
 
 ) {
 

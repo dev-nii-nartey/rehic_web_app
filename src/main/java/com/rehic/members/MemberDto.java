@@ -1,6 +1,5 @@
 package com.rehic.members;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -52,6 +51,8 @@ public class MemberDto implements Serializable {
     private List<String> skills;
     // Additional Information
     private String specialNeeds;
+    private String howDidYouHear;
+
 
     public MemberDto(Member member) {
         this.recordId = member.recordId();
@@ -89,5 +90,6 @@ public class MemberDto implements Serializable {
         this.spiritualGifts = member.spiritualGifts();
         this.skills = member.skills();
         this.specialNeeds = member.specialNeeds();
+        this.howDidYouHear = member.howDidYouHear();
     }
 }

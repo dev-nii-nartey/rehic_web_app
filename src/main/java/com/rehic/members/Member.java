@@ -56,7 +56,8 @@ public record Member(
         LocalDate consentSignatureDate,
         // Additional Information
         String specialNeeds,
-        String howDidYouHear
+        String howDidYouHear,
+        Boolean isDeleted
 ) {
     public Member(MembershipRegistrationForm membershipRegistrationForm) {
         this(
@@ -106,7 +107,25 @@ public record Member(
                 true,
                 LocalDate.now(),
                 membershipRegistrationForm.specialNeeds(),
-                membershipRegistrationForm.howDidYouHear()
+                membershipRegistrationForm.howDidYouHear(),
+                membershipRegistrationForm.isDeleted() != null ? membershipRegistrationForm.isDeleted() : false
+        );
+    }
+
+
+    // Helper method to update isDeleted
+    public Member withIsDeleted(boolean isDeleted) {
+        return new Member(
+                recordId, branchName, registrationDate, firstName, lastName, preferredName,
+                dateOfBirth, gender, maritalStatus, residingAddress, primaryPhone, secondaryPhone,
+                emailAddress, occupation, employer, spouseName, spousePhone, fatherName, fatherHometown,
+                fatherContact, motherName, motherHometown, motherContact, emergencyContactPhone,
+                emergencyContactRelationship, dateJoinedChurch, baptizedWithHolySpirit, dateOfSalvation,
+                baptismDate, previousChurchAffiliation, yearsAttended, ministriesOfInterest,
+                spiritualGifts, skills, agreeWithBibleIsInspiredWord, agreeWithSalvationThroughFaith,
+                agreeWithJesusSonOfGod, commitmentAttendServices, commitmentSupportActivities,
+                commitmentTithe, commitmentLiveChristianValues, signatureDate, consentContactPermission,
+                consentPhotoUse, consentSignatureDate, specialNeeds, howDidYouHear, isDeleted
         );
     }
 

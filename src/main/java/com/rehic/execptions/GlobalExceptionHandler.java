@@ -1,6 +1,7 @@
 package com.rehic.execptions;
 
 import io.jsonwebtoken.JwtException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -24,7 +25,26 @@ public class GlobalExceptionHandler {
             return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
         }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateEntry(DataIntegrityViolationException ex) {
+        ErrorResponse error = new ErrorResponse(
+                "DUPLICATE_ENTRY",
+                ex.getMessage(),
+                Instant.now()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(error);
+    }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(IllegalArgumentException ex) {
+        ErrorResponse error = new ErrorResponse(
+                "BAD_REQUEST",
+                ex.getMessage(),
+                Instant.now()
+        );
+        return ResponseEntity.badRequest().body(error);
+    }
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleAuthException(AuthenticationException ex) {

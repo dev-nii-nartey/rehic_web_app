@@ -7,6 +7,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -22,19 +23,36 @@ public class JwtUtil {
     @Value("${jwt.secret}" )
     private String secretKey;
 
-    @Value("${jwt.expiration}")
-    private long expiration;
+
+    @Value("${access.token.expiration}")
+    private long accessTokenExpiration;
+
+    @Value("${refresh.token.expiration}")
+    private long refreshTokenExpiration;
+
+
+    //Generate RefreshToken
+    public String generateRefreshToken(UserDetails user) {
+        return generateToken(user,refreshTokenExpiration, "refresh");
+    }
+
+
+    //Generate accessToken
+    public String generateAccessToken(UserDetails user) {
+        return generateToken(user,accessTokenExpiration, "access");
+    }
 
     // Generate token with given user name
-    public String generateToken(UserDetails userDetails) {
+    private String generateToken(UserDetails userDetails, Long expiration, String tokenType) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("subject", userDetails.getUsername());
         claims.put("authorities", userDetails.getAuthorities());
-        return createToken(claims);
+        claims.put("type", tokenType);
+        return createToken(claims,expiration);
     }
 
     // Create a JWT token with specified claims and subject (email)
-    private String createToken(Map<String, Object> claims) {
+    private String createToken(Map<String, Object> claims, Long expiration) {
         return Jwts.builder()
                 .claims(claims)
                 .subject(claims.get("subject").toString())
@@ -75,24 +93,43 @@ public class JwtUtil {
     }
 
     // Check if the token is expired
+    public boolean isValidAccessToken(String user, String accessToken) {
+        try {
+            return validateToken(accessToken, user,"access");
+        }catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean isValidRefreshToken(String refreshToken, String user) {
+        try {
+            return  validateToken(refreshToken, user,"refresh");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
     // Validate the token against user details and expiration
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    private Boolean validateToken(String token, String userDetails, String tokenType) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return (username.equals(userDetails) &&
+                !isTokenExpired(token) &&
+                extractAllClaims(token).containsKey(tokenType)
+        );
     }
 
     public Map<String, String> parseToken(HttpServletRequest request) {
-        final String authorizationHeader = request.getHeader("Authorization");
+        final String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         final HashMap<String, String> details = new HashMap<>();
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String jwt = authorizationHeader.substring(7);
-            details.put("username", extractUsername(jwt));
+            details.put("email", extractUsername(jwt));
             details.put("jwt", jwt);
             return details;
         }
