@@ -7,6 +7,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -32,20 +33,21 @@ public class JwtUtil {
 
     //Generate RefreshToken
     public String generateRefreshToken(UserDetails user) {
-       return generateToken(user,refreshTokenExpiration);
+        return generateToken(user,refreshTokenExpiration, "refresh");
     }
 
 
     //Generate accessToken
     public String generateAccessToken(UserDetails user) {
-       return generateToken(user,accessTokenExpiration);
+        return generateToken(user,accessTokenExpiration, "access");
     }
 
     // Generate token with given user name
-    private String generateToken(UserDetails userDetails, Long expiration) {
+    private String generateToken(UserDetails userDetails, Long expiration, String tokenType) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("subject", userDetails.getUsername());
         claims.put("authorities", userDetails.getAuthorities());
+        claims.put("type", tokenType);
         return createToken(claims,expiration);
     }
 
@@ -91,18 +93,37 @@ public class JwtUtil {
     }
 
     // Check if the token is expired
+    public boolean isValidAccessToken(String user, String accessToken) {
+        try {
+            return validateToken(accessToken, user,"access");
+        }catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean isValidRefreshToken(String refreshToken, String user) {
+        try {
+            return  validateToken(refreshToken, user,"refresh");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
     // Validate the token against user details and expiration
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    private Boolean validateToken(String token, String userDetails, String tokenType) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return (username.equals(userDetails) &&
+                !isTokenExpired(token) &&
+                extractAllClaims(token).containsKey(tokenType)
+        );
     }
 
     public Map<String, String> parseToken(HttpServletRequest request) {
-        final String authorizationHeader = request.getHeader("Authorization");
+        final String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         final HashMap<String, String> details = new HashMap<>();
 

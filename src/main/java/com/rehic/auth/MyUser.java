@@ -12,4 +12,5 @@ public class MyUser {
     private String password;
     private String roles;  //going to be comma seperated
     private boolean enabled;
+    private String refreshToken;
 }

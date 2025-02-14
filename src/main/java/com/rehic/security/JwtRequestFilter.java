@@ -39,19 +39,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             Map<String, String> tokenInfo = jwtUtil.parseToken(request);
-            log.info("Token INFO {}",tokenInfo);
-
             String username = tokenInfo.get("email");
             String jwt = tokenInfo.get("jwt");
-
-            log.info("MORE INFORMATION {}", username);
-
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-                if (jwtUtil.validateToken(jwt, userDetails)) {
+                if (jwtUtil.isValidAccessToken( userDetails.getUsername(),jwt)) {
                     JwtAuthenticationToken jwtAuthenticationToken = new JwtAuthenticationToken(userDetails, userDetails.getAuthorities());
                     jwtAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(jwtAuthenticationToken);

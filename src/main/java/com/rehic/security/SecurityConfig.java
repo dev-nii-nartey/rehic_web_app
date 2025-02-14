@@ -44,7 +44,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // Enable CORS first
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Add this
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/v1/rehic/login").permitAll()
@@ -52,14 +52,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/rehic/events").hasAnyRole("ADMIN")
                         .requestMatchers("/api/v1/rehic/helloUser").hasAnyRole("ADMIN", "USER")
                         .requestMatchers("/api/v1/rehic/helloAdmin").hasAnyRole("ADMIN")
-
-
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
-
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
