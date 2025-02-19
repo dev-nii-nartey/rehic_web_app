@@ -25,7 +25,7 @@ public class AttendanceController {
     }
 
     @GetMapping
-    public List<Attendance> getMemberAttendance(String email) {
+    public List<Attendance> getMemberAttendance(@RequestParam("email") String email) {
         return attendanceService.getMemberAttendance(email);
     }
 

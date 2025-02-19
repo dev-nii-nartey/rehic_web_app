@@ -9,5 +9,5 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Document(collection = "attendances")
-public record Attendance(UUID id, @Id @Indexed String memberEmail, LocalDate date, boolean attended) {
+public record Attendance(@Id UUID id, @Indexed String memberEmail, LocalDate date, boolean attended) {
 }

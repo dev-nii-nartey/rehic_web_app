@@ -21,9 +21,6 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     public List<Attendance> recordBulkAttendance(BulkAttendanceRequest request) {
-        if (request.date().getDayOfWeek() != DayOfWeek.SUNDAY) {
-            throw new IllegalArgumentException("Attendance can only be recorded for Sundays");
-        }
           return request.attendances().stream()
                 .map(memberAttendance -> createAttendanceRecord(request.date(), memberAttendance))
                 .map(this::saveValidatedAttendance)

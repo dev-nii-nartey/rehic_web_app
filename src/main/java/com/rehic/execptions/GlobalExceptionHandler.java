@@ -71,16 +71,7 @@ public class GlobalExceptionHandler {
 
 
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgsException(IllegalArgumentException ex) {
-        ErrorResponse error = new ErrorResponse(
-                "AUTHENTICATION FAILED",
-                ex.getMessage(),
-                Instant.now()
-        );
-        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
 
-    }
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<ErrorResponse> handleJwtException(JwtException ex) {
         ErrorResponse error = new ErrorResponse(
