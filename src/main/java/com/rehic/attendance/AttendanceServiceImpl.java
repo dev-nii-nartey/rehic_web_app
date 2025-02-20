@@ -3,6 +3,8 @@ package com.rehic.attendance;
 
 import com.rehic.members.MemberRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +36,9 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public List<Attendance> getMemberAttendance(String memberEmail) {
-        return attendanceRepo.findByMemberEmail(memberEmail);
+    public Page<Attendance> getMemberAttendance(String memberEmail, int PageNumber, int pageSize) {
+        PageRequest pageRequest =  PageRequest.of(PageNumber,pageSize);
+        return attendanceRepo.findByMemberEmail(pageRequest, memberEmail);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.rehic.attendance;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -25,8 +26,13 @@ public class AttendanceController {
     }
 
     @GetMapping
-    public List<Attendance> getMemberAttendance(@RequestParam("email") String email) {
-        return attendanceService.getMemberAttendance(email);
+    public Page<Attendance> getMemberAttendance(
+            @RequestParam String email,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize
+
+            ) {
+        return attendanceService.getMemberAttendance(email,pageNumber,pageSize );
     }
 
     @PostMapping("/date")
