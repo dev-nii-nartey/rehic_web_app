@@ -10,8 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Transactional
@@ -21,23 +23,54 @@ public class AttendanceServiceImpl implements AttendanceService {
     private AttendanceRepo attendanceRepo;
 
 
+
+    //BULK PROCESSING (atomicity not considered ) liable to partial update and no rollbacks
     @Override
-    public List<Attendance> recordBulkAttendance(BulkAttendanceRequest request) {
-          return request.attendances().stream()
-                .map(memberAttendance -> createAttendanceRecord(request.date(), memberAttendance))
-                .map(this::saveValidatedAttendance)
-                .toList();
+    public void recordBulkAttendance(BulkAttendanceRequest request) {
+        List<List<MemberAttendance>> batches = makeBatch(request.attendances());
+
+        List<CompletableFuture<Void>> futures = batches.stream()
+                .map(batch -> CompletableFuture.runAsync(() -> processBatch(request.date(), batch))).toList();
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     }
+
+
+    //Improved Bulk processing
+    @Override
+    public void recordBulkAttendance2(BulkAttendanceRequest request) {
+        List<List<MemberAttendance>> batches = makeBatch(request.attendances());
+        List<Attendance> savedRecords = new ArrayList<>();
+
+        try {
+            List<CompletableFuture<Void>> futures = batches.stream()
+                    .map(batch -> CompletableFuture.runAsync(() -> {
+                        List<Attendance> records = processBatch2(request.date(), batch);
+                        synchronized (savedRecords) {
+                            savedRecords.addAll(records);
+                        }
+                    }))
+                    .toList();
+
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        } catch (Exception e) {
+            // Rollback changes in case of error
+            savedRecords.forEach(attendanceRepo::delete);
+            throw new RuntimeException("Bulk operation failed, changes rolled back", e);
+        }
+    }
+
+
 
     @Override
     public Attendance recordAttendance(Attendance attendance) {
         validateRecording(attendance);
-         return attendanceRepo.save(attendance);
+        return attendanceRepo.save(attendance);
     }
 
     @Override
     public Page<Attendance> getMemberAttendance(String memberEmail, int PageNumber, int pageSize) {
-        PageRequest pageRequest =  PageRequest.of(PageNumber,pageSize);
+        PageRequest pageRequest = PageRequest.of(PageNumber, pageSize);
         return attendanceRepo.findByMemberEmail(pageRequest, memberEmail);
     }
 
@@ -69,6 +102,28 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     private Attendance saveValidatedAttendance(Attendance attendance) {
         validateRecording(attendance);
-        return attendanceRepo.save(attendance);
+        return attendanceRepo.save(attendance); // Return the saved entity
+    }
+
+    private List<List<MemberAttendance>> makeBatch(List<MemberAttendance> attendances) {
+        int batchSize = 20;
+        List<List<MemberAttendance>> batch = new ArrayList<>();
+        for (int i = 0; i < attendances.size(); i += batchSize) {
+            int endIndex = Math.min(batchSize, i + batchSize);
+            batch.add(attendances.subList(i, endIndex));
+        }
+        return batch;
+    }
+
+    private void processBatch(LocalDate date, List<MemberAttendance> batch) {
+        batch.stream().map(memberAttendance -> createAttendanceRecord(date, memberAttendance))
+                .forEach(this::saveValidatedAttendance);
+    }
+
+    private List<Attendance> processBatch2(LocalDate date, List<MemberAttendance> batch) {
+        return batch.stream()
+                .map(memberAttendance -> createAttendanceRecord(date, memberAttendance))
+                .map(this::saveValidatedAttendance)
+                .toList();
     }
 }

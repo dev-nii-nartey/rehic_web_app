@@ -16,8 +16,8 @@ public class AttendanceController {
     private AttendanceService attendanceService;
 
     @PostMapping("/bulk")
-    public List<Attendance> recordBulkAttendance(@RequestBody BulkAttendanceRequest request) {
-        return attendanceService.recordBulkAttendance(request);
+    public void recordBulkAttendance(@RequestBody BulkAttendanceRequest request) {
+        attendanceService.recordBulkAttendance2(request);
     }
 
     @PatchMapping
@@ -31,8 +31,8 @@ public class AttendanceController {
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "10") int pageSize
 
-            ) {
-        return attendanceService.getMemberAttendance(email,pageNumber,pageSize );
+    ) {
+        return attendanceService.getMemberAttendance(email, pageNumber, pageSize);
     }
 
     @PostMapping("/date")
